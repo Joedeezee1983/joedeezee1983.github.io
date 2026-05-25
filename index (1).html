@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joseph Dobbs — AI Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080e1a;
+      --surface: #0f1c2e;
+      --surface2: #162437;
+      --accent: #00e5c0;
+      --accent2: #0099ff;
+      --text: #e8f4f8;
+      --muted: #7a9bb5;
+      --border: rgba(0, 229, 192, 0.15);
+      --glow: 0 0 40px rgba(0, 229, 192, 0.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease;
+      mix-blend-mode: screen;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(0,229,192,0.4);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.35s ease, width 0.2s, height 0.2s;
+    }
+
+    /* Grid noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        linear-gradient(rgba(0,229,192,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,192,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Nav */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(8, 14, 26, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 0.05em;
+      color: var(--text);
+    }
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 120px 60px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-content { max-width: 800px; }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-tag::before {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--accent);
+    }
+
+    .hero-name {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .hero-name .line2 {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--accent);
+    }
+
+    .hero-role {
+      font-family: 'DM Mono', monospace;
+      font-size: 1rem;
+      color: var(--muted);
+      margin-bottom: 32px;
+      letter-spacing: 0.05em;
+    }
+
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin-bottom: 48px;
+      line-height: 1.8;
+    }
+
+    .hero-desc strong { color: var(--text); font-weight: 500; }
+
+    .hero-ctas {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: var(--accent);
+      color: var(--bg);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,229,192,0.3);
+    }
+
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      background: transparent;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      cursor: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Floating stats */
+    .hero-stats {
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 20px 28px;
+      text-align: center;
+      box-shadow: var(--glow);
+      animation: float 4s ease-in-out infinite;
+    }
+    .stat-card:nth-child(2) { animation-delay: -1.5s; }
+    .stat-card:nth-child(3) { animation-delay: -3s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
+
+    /* Section base */
+    section {
+      padding: 100px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-tag::before {
+      content: '';
+      width: 24px; height: 1px;
+      background: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 60px;
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: start;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 1.05rem;
+    }
+    .about-text p strong { color: var(--text); font-weight: 500; }
+
+    .about-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .stack-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .stack-item:hover {
+      border-color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .stack-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stack-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text);
+      letter-spacing: 0.05em;
+    }
+
+    .stack-level {
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    /* Projects */
+    #projects { background: var(--surface); }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .project-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .project-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+    .project-card.featured {
+      grid-column: span 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .project-card:hover::before { transform: scaleX(1); }
+
+    .project-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      margin-bottom: 16px;
+    }
+
+    .project-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .project-subtitle {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .project-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .project-links {
+      display: flex;
+      gap: 16px;
+    }
+
+    .project-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 10px; }
+
+    .project-live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+    .live-dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    /* Experience */
+    .exp-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: 40px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .exp-period {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      padding-top: 4px;
+    }
+
+    .exp-role {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+
+    .exp-company {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+    }
+
+    .exp-desc {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    /* Contact */
+    #contact {
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .contact-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .contact-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+      line-height: 1;
+    }
+
+    .contact-title span {
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--accent);
+    }
+
+    .contact-sub {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 48px;
+    }
+
+    .contact-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Footer */
+    footer {
+      padding: 32px 60px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .footer-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      opacity: 0.5;
+    }
+
+    /* Animations */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 60px; }
+      .hero-stats { display: none; }
+      .hero-name { font-size: 3rem; }
+      section { padding: 60px 24px; }
+      .about-grid { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
+      .exp-item { grid-template-columns: 1fr; gap: 8px; }
+      footer { flex-direction: column; gap: 8px; padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-logo">JD<span>.</span></div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#experience">Experience</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-tag">Available for freelance & full-time</div>
+      <h1 class="hero-name">
+        Joseph<br>
+        <span class="line2">Dobbs</span>
+      </h1>
+      <p class="hero-role">AI Developer &amp; Full Stack Engineer</p>
+      <p class="hero-desc">
+        I build <strong>production-grade AI systems</strong> that solve real problems. 
+        Currently building <strong>JayDe</strong> — a live SaaS AI assistant for Shopify merchants. 
+        Based in California.
+      </p>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn-primary">View My Work →</a>
+        <a href="#contact" class="btn-outline">Get In Touch</a>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Live SaaS Product</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">4+</div>
+        <div class="stat-label">Projects Built</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Problems to Solve</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about">
+    <div class="section-tag">About Me</div>
+    <h2 class="section-title">Builder. Technician.<br>Problem Solver.</h2>
+    <div class="about-grid">
+      <div class="about-text fade-up">
+        <p>I'm a self-driven AI developer and Computer Science student who decided to stop waiting and start building. Last year I took control of my future — enrolled in TripleTen's software engineering program and started shipping real products.</p>
+        <p>By day I work as a <strong>Slot Technician at a casino</strong>, diagnosing and repairing complex hardware and software systems in a zero-downtime, high-stakes environment. That background gives me a disciplined, methodical approach to debugging that most developers never develop.</p>
+        <p>My flagship project is <strong>JayDe</strong> — a fully deployed SaaS AI assistant for Shopify merchants, built entirely by me. It's live, it works, and it's proof of what I can do.</p>
+        <p>I'm open to freelance contracts, full-time roles, and interesting problems. If you're building something ambitious — let's talk.</p>
+      </div>
+      <div class="about-stack fade-up">
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">TypeScript / Node.js</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">React / Remix / React Router</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">Anthropic Claude API</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">PostgreSQL / Prisma</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">Redis / BullMQ</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">Fly.io / Docker</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">Tailwind CSS v4</span><span class="stack-level">Primary</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">Shopify API / App Bridge</span><span class="stack-level">Proficient</span></div>
+        <div class="stack-item"><div class="stack-dot"></div><span class="stack-name">Stripe / Resend</span><span class="stack-level">Proficient</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="section-tag">Projects</div>
+    <h2 class="section-title">Things I've Built</h2>
+    <div class="projects-grid">
+
+      <!-- JayDe - Featured -->
+      <div class="project-card featured fade-up">
+        <div>
+          <div class="project-num">01 — Flagship</div>
+          <div class="project-live-badge"><span class="live-dot"></span> Live in Production</div>
+          <h3 class="project-title">JayDe</h3>
+          <p class="project-subtitle">AI Assistant for Shopify Merchants</p>
+          <p class="project-desc">A fully deployed SaaS platform that connects to Shopify stores and lets merchants manage their entire operation through natural language. Inventory queries, order management, customer segmentation, email campaigns, abandoned cart recovery — all through a single chat interface powered by Anthropic's Claude API.</p>
+          <div class="project-tags">
+            <span class="tag">TypeScript</span>
+            <span class="tag">React Router</span>
+            <span class="tag">Claude API</span>
+            <span class="tag">PostgreSQL</span>
+            <span class="tag">Redis</span>
+            <span class="tag">Fly.io</span>
+            <span class="tag">Shopify</span>
+            <span class="tag">Stripe</span>
+          </div>
+          <div class="project-links">
+            <a href="https://jay-de.com" target="_blank" class="project-link">Live Site →</a>
+          </div>
+        </div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); padding: 32px; font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--muted); line-height: 2;">
+          <div style="color: var(--accent); margin-bottom: 12px;">// JayDe capabilities</div>
+          <div><span style="color: var(--accent2);">merchant</span>.ask(<span style="color: #a8d8a8;">"How many orders today?"</span>)</div>
+          <div style="margin-top: 4px; padding-left: 16px; color: var(--text);">→ "You have 14 orders totaling $2,847"</div>
+          <div style="margin-top: 12px;"><span style="color: var(--accent2);">merchant</span>.ask(<span style="color: #a8d8a8;">"Send win-back email"</span>)</div>
+          <div style="margin-top: 4px; padding-left: 16px; color: var(--text);">→ Campaign sent to 847 customers</div>
+          <div style="margin-top: 12px;"><span style="color: var(--accent2);">system</span>.detect(<span style="color: #a8d8a8;">"abandoned_cart"</span>)</div>
+          <div style="margin-top: 4px; padding-left: 16px; color: var(--text);">→ Recovery email queued automatically</div>
+        </div>
+      </div>
+
+      <!-- Casino Diagnostic -->
+      <div class="project-card fade-up">
+        <div class="project-num">02 — Concept</div>
+        <h3 class="project-title">SlotMind</h3>
+        <p class="project-subtitle">AI Diagnostic Tool for Slot Machines</p>
+        <p class="project-desc">A Raspberry Pi-based portable AI diagnostic system for casino slot machines. The device downloads error logs directly from game hardware, runs AI analysis, and provides clear fault diagnosis when plugged into a PC — eliminating the guesswork in troubleshooting complex gaming systems.</p>
+        <div class="project-tags">
+          <span class="tag">Raspberry Pi</span>
+          <span class="tag">Python</span>
+          <span class="tag">AI Analysis</span>
+          <span class="tag">Hardware</span>
+          <span class="tag">Concept</span>
+        </div>
+        <div style="margin-top: auto; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--muted);">In development — domain expertise meets AI</div>
+      </div>
+
+      <!-- mesh-ai -->
+      <div class="project-card fade-up">
+        <div class="project-num">03 — Academic</div>
+        <h3 class="project-title">mesh-ai</h3>
+        <p class="project-subtitle">AI-Powered Backend System</p>
+        <p class="project-desc">A full-stack AI backend project built during the TripleTen software engineering program. Features authentication, chat management, document handling, and query processing with a clean RESTful API architecture.</p>
+        <div class="project-tags">
+          <span class="tag">TypeScript</span>
+          <span class="tag">Node.js</span>
+          <span class="tag">REST API</span>
+          <span class="tag">AI Integration</span>
+        </div>
+        <div class="project-links">
+          <a href="https://github.com/Joedeezee1983/ai-se_project_mesh-ai" target="_blank" class="project-link">GitHub →</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="section-tag">Experience</div>
+    <h2 class="section-title">Where I've Been</h2>
+    <div class="exp-list">
+      <div class="exp-item fade-up">
+        <div class="exp-period">2024 — Present</div>
+        <div>
+          <div class="exp-role">AI Developer & Founder</div>
+          <div class="exp-company">JayDe / JD Tek LLC — Self-Employed</div>
+          <p class="exp-desc">Sole developer of JayDe, a production SaaS AI assistant for Shopify merchants. Built the entire stack — AI agent architecture, multi-tenant backend, email infrastructure, billing system, and frontend — from scratch. Currently in invite-only beta at jay-de.com.</p>
+        </div>
+      </div>
+      <div class="exp-item fade-up">
+        <div class="exp-period">2023 — Present</div>
+        <div>
+          <div class="exp-role">Slot Technician</div>
+          <div class="exp-company">Casino — Lakeport, CA</div>
+          <p class="exp-desc">Diagnose and repair complex hardware and software systems across the casino floor. Zero-downtime environment requiring precise, methodical troubleshooting under pressure. Directly applicable to software debugging and systems thinking in development work.</p>
+        </div>
+      </div>
+      <div class="exp-item fade-up">
+        <div class="exp-period">2024 — Present</div>
+        <div>
+          <div class="exp-role">Computer Science Student</div>
+          <div class="exp-company">University of the People / TripleTen</div>
+          <p class="exp-desc">Pursuing a BS in Computer Science while simultaneously building production software. Completed TripleTen's software engineering program with hands-on projects in AI integration and full-stack development.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <div class="contact-inner">
+      <div class="section-tag" style="justify-content: center;">Contact</div>
+      <h2 class="contact-title">Let's Build<br><span>Something.</span></h2>
+      <p class="contact-sub">Open to freelance contracts, full-time roles, and interesting problems. Based in California — working remotely worldwide.</p>
+      <div class="contact-links">
+        <a href="mailto:joedobbs@jay-de.com" class="btn-primary">Email Me →</a>
+        <a href="https://github.com/Joedeezee1983" target="_blank" class="btn-outline">GitHub</a>
+        <a href="https://jay-de.com" target="_blank" class="btn-outline">JayDe</a>
+        <a href="https://www.upwork.com" target="_blank" class="btn-outline">Upwork</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-name">JOSEPH DOBBS — AI DEVELOPER</div>
+    <div class="footer-copy">© 2026 — Built with intention</div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      cursor.style.left = mouseX - 5 + 'px';
+      cursor.style.top = mouseY - 5 + 'px';
+    });
+
+    function animateRing() {
+      ringX += (mouseX - ringX - 18) * 0.12;
+      ringY += (mouseY - ringY - 18) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.transform = 'scale(2)';
+        ring.style.width = '60px';
+        ring.style.height = '60px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.transform = 'scale(1)';
+        ring.style.width = '36px';
+        ring.style.height = '36px';
+      });
+    });
+
+    // Fade up on scroll
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 100);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
